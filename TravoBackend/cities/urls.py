@@ -1,11 +1,7 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+"""
+Re-exports the shared API routes. Prefer `TravoBackend.api_urls` in root URLconf.
+"""
 
-from .views import CityViewSet
+from TravoBackend.api_urls import urlpatterns
 
-router = DefaultRouter()
-router.register("cities", CityViewSet, basename="city")
-
-urlpatterns = [
-    path("", include(router.urls)),
-]
+__all__ = ["urlpatterns"]
