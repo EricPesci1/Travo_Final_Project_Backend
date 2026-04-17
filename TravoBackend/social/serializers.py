@@ -19,21 +19,39 @@ class DimUserSerializer(serializers.ModelSerializer):
 
 
 class RelationshipSerializer(serializers.ModelSerializer):
+    requester_username = serializers.CharField(source="requester.username", read_only=True)
+    addressee_username = serializers.CharField(source="addressee.username", read_only=True)
+
     class Meta:
         model = Relationship
-        fields = ["id", "requester", "addressee", "status", "date_sent"]
+        fields = [
+            "id",
+            "requester",
+            "requester_username",
+            "addressee",
+            "addressee_username",
+            "status",
+            "date_sent",
+        ]
         read_only_fields = ["date_sent"]
 
 
 class FactReviewSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source="user.username", read_only=True)
+    city_name = serializers.CharField(source="city.city", read_only=True)
+    state_name = serializers.CharField(source="city.state_name", read_only=True)
+
     class Meta:
         model = FactReview
         fields = [
             "id",
             "user",
+            "user_username",
             "rating",
             "description",
             "city",
+            "city_name",
+            "state_name",
             "created_at",
             "pros",
             "cons",
