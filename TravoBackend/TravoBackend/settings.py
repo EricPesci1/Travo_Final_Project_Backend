@@ -21,10 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#*(+i31_!p8=_x3l$_pr7)j7h_&tjsw76yc)i2qg=ycsankagw'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-#*(+i31_!p8=_x3l$_pr7)j7h_&tjsw76yc)i2qg=ycsankagw",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (os.environ.get("DJANGO_DEBUG") or "true").strip().lower() in ("1", "true", "yes", "y", "on")
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -45,14 +48,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'cities',
     'social',
+    'auth_api',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -126,3 +132,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Browser clients (e.g. Vite/React dev server) calling the API from another origin.
+# Comma-separated list in CORS_ALLOWED_ORIGINS env merges with these defaults.
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    # Expo (Metro / dev server) when using expo start --web
+    'http://localhost:8081',
+    'http://127.0.0.1:8081',
+]
+_extra_cors = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
+if _extra_cors:
+    CORS_ALLOWED_ORIGINS.extend(
+        o.strip() for o in _extra_cors.split(',') if o.strip()
+    )
+
+# If the frontend uses cookies/session auth across origins, add matching entries here
+# (comma-separated via CSRF_TRUSTED_ORIGINS env).
+CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
+_extra_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
+if _extra_csrf:
+    CSRF_TRUSTED_ORIGINS.extend(
+        o.strip() for o in _extra_csrf.split(',') if o.strip()
+    )

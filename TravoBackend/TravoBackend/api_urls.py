@@ -15,5 +15,6 @@ router.register("relationships", RelationshipViewSet, basename="relationship")
 router.register("reviews", FactReviewViewSet, basename="review")
 
 urlpatterns = [
+    path("auth/", include("auth_api.urls")),
     path("", include(router.urls)),
 ]
