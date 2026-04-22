@@ -86,13 +86,13 @@ class FactReviewViewSet(viewsets.ModelViewSet):
         frontend-friendly payload:
           - username: string (creates/uses DimUser)
           - city_name: string
-          - state_name: string
+          - state: string
         """
         data = request.data.copy()
 
         username = (data.get("username") or "").strip()
         city_name = (data.get("city_name") or "").strip()
-        state_name = (data.get("state_name") or "").strip()
+        state = (data.get("state") or data.get("state_name") or "").strip()
 
         if username and not data.get("user"):
             user, _created = DimUser.objects.get_or_create(
@@ -105,16 +105,16 @@ class FactReviewViewSet(viewsets.ModelViewSet):
             )
             data["user"] = user.user_key
 
-        if (city_name or state_name) and not data.get("city"):
-            if not (city_name and state_name):
-                raise ValidationError({"city_name": "city_name and state_name are required together."})
+        if (city_name or state) and not data.get("city"):
+            if not (city_name and state):
+                raise ValidationError({"city_name": "city_name and state are required together."})
             city = (
-                City.objects.filter(city__iexact=city_name, state_name__iexact=state_name)
+                City.objects.filter(city__iexact=city_name, state__iexact=state)
                 .order_by("id")
                 .first()
             )
             if not city:
-                raise ValidationError({"city": f'No city found for "{city_name}, {state_name}".'})
+                raise ValidationError({"city": f'No city found for "{city_name}, {state}".'})
             data["city"] = city.id
 
         serializer = self.get_serializer(data=data)

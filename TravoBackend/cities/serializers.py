@@ -6,4 +6,4 @@ from .models import City
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
-        fields = ["id", "city", "state_name", "lat", "lng"]
+        fields = ["id", "city", "state", "lat", "lng"]

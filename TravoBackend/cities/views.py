@@ -5,5 +5,5 @@ from .serializers import CitySerializer
 
 
 class CityViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = City.objects.all().order_by("state_name", "city")
+    queryset = City.objects.all().order_by("state", "city")
     serializer_class = CitySerializer
