@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'ec2-54-190-40-159.us-west-2.compute.amazonaws.com',
+    'ec2-34-212-132-12.us-west-2.compute.amazonaws.com',
 ]
 _extra_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '').strip()
 if _extra_hosts:
@@ -143,6 +144,8 @@ CORS_ALLOWED_ORIGINS = [
     # Expo (Metro / dev server) when using expo start --web
     'http://localhost:8081',
     'http://127.0.0.1:8081',
+    # EC2 production
+    'http://ec2-34-212-132-12.us-west-2.compute.amazonaws.com',
 ]
 _extra_cors = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
 if _extra_cors:
