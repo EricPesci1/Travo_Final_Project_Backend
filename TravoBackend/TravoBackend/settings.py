@@ -136,5 +136,5 @@ CORS_ALLOW_ALL_ORIGINS = True  # Temporary for testing ONLY
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8081',
     'http://127.0.0.1:8081',
-    'http://ec2-34-212-132-12.us-west-2.compute.amazonaws.com',
+    'http://ec2-34-208-202-251.us-west-2.compute.amazonaws.com',
 ]
