@@ -29,12 +29,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.environ.get("DJANGO_DEBUG") or "true").strip().lower() in ("1", "true", "yes", "y", "on")
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'ec2-54-190-40-159.us-west-2.compute.amazonaws.com',
-    'ec2-34-212-132-12.us-west-2.compute.amazonaws.com',
-]
+ALLOWED_HOSTS = ['*']
 _extra_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '').strip()
 if _extra_hosts:
     ALLOWED_HOSTS.extend(h.strip() for h in _extra_hosts.split(',') if h.strip())
@@ -57,9 +52,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -136,28 +131,10 @@ STATIC_URL = 'static/'
 
 # Browser clients (e.g. Vite/React dev server) calling the API from another origin.
 # Comma-separated list in CORS_ALLOWED_ORIGINS env merges with these defaults.
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    # Expo (Metro / dev server) when using expo start --web
+CORS_ALLOW_ALL_ORIGINS = True  # Temporary for testing ONLY
+
+CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8081',
     'http://127.0.0.1:8081',
-    # EC2 production
     'http://ec2-34-212-132-12.us-west-2.compute.amazonaws.com',
 ]
-_extra_cors = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
-if _extra_cors:
-    CORS_ALLOWED_ORIGINS.extend(
-        o.strip() for o in _extra_cors.split(',') if o.strip()
-    )
-
-# If the frontend uses cookies/session auth across origins, add matching entries here
-# (comma-separated via CSRF_TRUSTED_ORIGINS env).
-CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
-_extra_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
-if _extra_csrf:
-    CSRF_TRUSTED_ORIGINS.extend(
-        o.strip() for o in _extra_csrf.split(',') if o.strip()
-    )
