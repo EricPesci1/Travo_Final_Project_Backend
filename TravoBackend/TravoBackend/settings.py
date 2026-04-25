@@ -134,7 +134,24 @@ STATIC_URL = 'static/'
 CORS_ALLOW_ALL_ORIGINS = True  # Temporary for testing ONLY
 
 CSRF_TRUSTED_ORIGINS = [
+    # port 80 (default HTTP)
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://ec2-34-208-202-251.us-west-2.compute.amazonaws.com',
+    # port 8000 (Django / gunicorn direct)
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://ec2-34-208-202-251.us-west-2.compute.amazonaws.com:8000',
+    # port 8081 (Expo web dev server)
     'http://localhost:8081',
     'http://127.0.0.1:8081',
-    'http://ec2-34-208-202-251.us-west-2.compute.amazonaws.com',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
+}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
