@@ -8,7 +8,7 @@ from rest_framework.routers import DefaultRouter
 from cities.views import CityViewSet
 from social.views import DimUserViewSet, FactReviewViewSet, RelationshipViewSet
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash="/?")
 router.register("cities", CityViewSet, basename="city")
 router.register("dim-users", DimUserViewSet, basename="dim-user")
 router.register("relationships", RelationshipViewSet, basename="relationship")

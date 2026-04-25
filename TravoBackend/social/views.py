@@ -33,8 +33,18 @@ class RelationshipViewSet(viewsets.ModelViewSet):
         """
         data = request.data.copy()
 
-        requester_username = (data.get("requester_username") or "").strip()
-        addressee_username = (data.get("addressee_username") or "").strip()
+        # Accept common frontend key names.
+        data["requester"] = data.get("requester") or data.get("requester_id") or data.get("requesterId")
+        data["addressee"] = data.get("addressee") or data.get("addressee_id") or data.get("addresseeId")
+
+        requester_username = (data.get("requester_username") or data.get("requesterUsername") or "").strip()
+        addressee_username = (data.get("addressee_username") or data.get("addresseeUsername") or "").strip()
+
+        # Alternate payload: { "username": "...", "friend_username": "..." }
+        if not requester_username:
+            requester_username = (data.get("username") or "").strip()
+        if not addressee_username:
+            addressee_username = (data.get("friend_username") or data.get("friendUsername") or "").strip()
 
         if requester_username and not data.get("requester"):
             requester, _ = DimUser.objects.get_or_create(
@@ -61,6 +71,20 @@ class RelationshipViewSet(viewsets.ModelViewSet):
                 },
             )
             data["addressee"] = addressee.user_key
+
+        if data.get("requester") and data.get("addressee") and str(data["requester"]) == str(data["addressee"]):
+            raise ValidationError({"addressee": "You cannot friend yourself."})
+
+        if data.get("requester") and data.get("addressee"):
+            existing = Relationship.objects.filter(
+                requester_id=data["requester"],
+                addressee_id=data["addressee"],
+            ).exists() or Relationship.objects.filter(
+                requester_id=data["addressee"],
+                addressee_id=data["requester"],
+            ).exists()
+            if existing:
+                raise ValidationError({"detail": "A relationship between these users already exists."})
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -90,9 +114,15 @@ class FactReviewViewSet(viewsets.ModelViewSet):
         """
         data = request.data.copy()
 
+        # Accept common frontend key names.
+        data["user"] = data.get("user") or data.get("user_id") or data.get("userId")
+        data["city"] = data.get("city") or data.get("city_id") or data.get("cityId")
+        data["date_start"] = data.get("date_start") or data.get("dateStart")
+        data["date_end"] = data.get("date_end") or data.get("dateEnd")
+
         username = (data.get("username") or "").strip()
-        city_name = (data.get("city_name") or "").strip()
-        state = (data.get("state") or data.get("state_name") or "").strip()
+        city_name = (data.get("city_name") or data.get("cityName") or "").strip()
+        state = (data.get("state") or data.get("state_name") or data.get("stateName") or "").strip()
 
         if username and not data.get("user"):
             user, _created = DimUser.objects.get_or_create(
